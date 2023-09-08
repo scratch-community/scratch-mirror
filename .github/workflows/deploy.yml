@@ -48,6 +48,7 @@ jobs:
                 # TW Compatibility
                 ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw' || '' }}/${{ env.sha }}/
                 NODE_ENV: production
+                ROUTING_STYLE: wildcard
 
             - name: Deploy to gh-pages branch
               uses: JamesIves/github-pages-deploy-action@4.1.4
