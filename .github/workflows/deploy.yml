@@ -30,6 +30,8 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '14.x' || '18.x' }}
+                  cache: 'npm'
+                  cache-dependency-path: scratch-gui/package-lock.json
             
             
             - name: Declare some variables
@@ -44,7 +46,7 @@ jobs:
               run: cd scratch-gui && npm run build
               env:
                 # TW Compatibility
-                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '/' }} + ${{ env.sha }} + "/"
+                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw' || '' }}/${{ env.sha }}/
                 NODE_ENV: production
 
             - name: Deploy to gh-pages branch
