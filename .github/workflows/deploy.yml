@@ -14,6 +14,7 @@ jobs:
         strategy:
             matrix:
                 repo: [TurboWarp/scratch-gui, scratchfoundation/scratch-gui]
+                
         steps:
             - uses: actions/checkout@v2
 
@@ -28,7 +29,13 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "14.x"
+                  node-version: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '18.x' || '14.x' }}
+            
+            
+            - name: Declare some variables
+              run: |
+                cd scratch-gui
+                echo "sha=$(git rev-parse "$GITHUB_SHA")" >> "$GITHUB_ENV"
             
             - name: Install dependencies
               run: cd scratch-gui && npm install
@@ -37,7 +44,7 @@ jobs:
               run: cd scratch-gui && npm run build
               env:
                 # TW Compatibility
-                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '' }}
+                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '/' }} + ${{ env.sha }} + "/"
                 NODE_ENV: production
 
             - name: Deploy to gh-pages branch
@@ -49,21 +56,8 @@ jobs:
                 token: ${{ github.token }}
                 repository-name: ${{ github.repository }}
                 # if turbowarp then use /tw/ as the baseurl
-                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw' || '' }}
+                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw/latest' || 'scratch/latest' }}
             
-            - name: Declare some variables
-              run: |
-                cd scratch-gui
-                echo "sha=$(git rev-parse "$GITHUB_SHA")" >> "$GITHUB_ENV"
-
-            - name: Build project using hash root
-              run: cd scratch-gui && npm run build
-              env:
-                # TW Compatibility
-                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '/' }} + ${{ env.sha }}
-                NODE_ENV: production
-                # Use hash root
-                PUBLIC_URL: /tw/${{ env.sha }}
                 
             - name: Deploy to hash root
               uses: JamesIves/github-pages-deploy-action@4.1.4
@@ -74,4 +68,4 @@ jobs:
                 token: ${{ github.token }}
                 repository-name: ${{ github.repository }}
                 # if turbowarp then use /tw/ as the baseurl
-                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw' || '' }}/${{ env.sha }}
+                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw' || 'scratch' }}/${{ env.sha }}
