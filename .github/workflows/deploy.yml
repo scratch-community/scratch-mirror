@@ -3,6 +3,8 @@ on:
     schedule:
         # Run every 24 hours
         - cron: "0 0 * * *"
+    push:
+    workflow_dispatch:
 
 jobs:
     deploy:
