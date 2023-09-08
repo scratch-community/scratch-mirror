@@ -35,9 +35,7 @@ jobs:
             
             
             - name: Declare some variables
-              run: |
-                cd scratch-gui
-                echo "sha=$(git rev-parse "$GITHUB_SHA")" >> "$GITHUB_ENV"
+              run: echo "sha=$(cd scratch-gui; git rev-parse HEAD)" >> "$GITHUB_ENV"
             
             - name: Install dependencies
               run: cd scratch-gui && npm install
