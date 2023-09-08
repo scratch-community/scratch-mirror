@@ -1,0 +1,75 @@
+name: Deploy to Cloudflare Pages
+on:
+    schedule:
+        # Run every 24 hours
+        - cron: "0 0 * * *"
+
+jobs:
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-latest
+        
+        strategy:
+            matrix:
+                repo: [TurboWarp/scratch-gui, scratchfoundation/scratch-gui]
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Checkout scratch-gui
+              uses: actions/checkout@v2
+              with:
+                  # We are tracking TurboWarp/scratch-gui instead of scratch-foundation/scratch-gui
+                  repository: ${{ matrix.repo }}
+                  path: scratch-gui
+                  fetch-depth: 1
+            
+            - name: Setup Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "14.x"
+            
+            - name: Install dependencies
+              run: cd scratch-gui && npm install
+
+            - name: Build project
+              run: cd scratch-gui && npm run build
+              env:
+                # TW Compatibility
+                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '' }}
+                NODE_ENV: production
+
+            - name: Deploy to gh-pages branch
+              uses: JamesIves/github-pages-deploy-action@dev
+              with:
+                branch: gh-pages
+                folder: scratch-gui/build
+                clean: false
+                token: ${{ github.token }}
+                repository-name: ${{ github.repository }}
+                # if turbowarp then use /tw/ as the baseurl
+                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw' || '' }}
+            
+            - name: Declare some variables
+              run: |
+                cd scratch-gui
+                echo "sha=$(git rev-parse "$GITHUB_SHA")" >> "$GITHUB_ENV"
+
+            - name: Build project using hash root
+              run: cd scratch-gui && npm run build
+              env:
+                # TW Compatibility
+                ROOT: ${{ matrix.repo == 'TurboWarp/scratch-gui' && '/tw/' || '/' }} + ${{ env.sha }}
+                NODE_ENV: production
+                # Use hash root
+                PUBLIC_URL: /tw/${{ env.sha }}
+                
+            - name: Deploy to hash root
+              uses: JamesIves/github-pages-deploy-action@dev
+              with:
+                branch: gh-pages
+                folder: scratch-gui/build
+                clean: false
+                token: ${{ github.token }}
+                repository-name: ${{ github.repository }}
+                # if turbowarp then use /tw/ as the baseurl
+                target-folder: ${{ matrix.repo == 'TurboWarp/scratch-gui' && 'tw' || '' }}/${{ env.sha }}
