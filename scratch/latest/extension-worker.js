@@ -477,7 +477,7 @@ var WorkerDispatch = /*#__PURE__*/function (_SharedDispatch) {
     key: "setService",
     value: function setService(service, provider) {
       var _this2 = this;
-      if (this.services.hasOwnProperty(service)) {
+      if (Object.prototype.hasOwnProperty.call(this.services, service)) {
         log.warn("Worker dispatch replacing existing service provider for ".concat(service));
       }
       this.services[service] = provider;
@@ -653,6 +653,9 @@ var SharedDispatch = /*#__PURE__*/function () {
           if (isRemote) {
             return this._remoteTransferCall.apply(this, [provider, service, method, transfer].concat(args));
           }
+
+          // TODO: verify correct `this` after switching from apply to spread
+          // eslint-disable-next-line prefer-spread
           var result = provider[method].apply(provider, args);
           return Promise.resolve(result);
         }
