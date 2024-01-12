@@ -1,0 +1,76 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google" value="notranslate"><meta name="description" content="TurboWarp is a Scratch mod with a compiler to run projects faster, dark mode for your eyes, a bunch of addons to improve the editor, and more."/><title>TurboWarp - Run Scratch projects faster</title><link rel="apple-touch-icon" href="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/images/apple-touch-icon.png"><style>.splash-screen {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+      .splash-screen[hidden],
+      .tw-loaded .splash-screen {
+        display: none;
+      }
+      .splash-screen[data-theme="dark"] {
+        background-color: #333;
+        color: white;
+      }
+      .splash-spinner:after {
+        content: " ";
+        display: block;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: 6px solid;
+        border-color: currentColor transparent currentColor transparent;
+        animation: splash-spinner 1.2s linear infinite;
+      }
+      @keyframes splash-spinner {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }</style></head><body><noscript><div class="splash-screen"><div><h1>TurboWarp requires JavaScript</h1><p>Consider using <a href="https://desktop.turbowarp.org/">TurboWarp Desktop</a> if you are afraid of remote JavaScript.</p></div></div></noscript><div class="splash-screen" id="spash-waiting-for-js" hidden><div class="splash-spinner"></div></div><script>(function() {
+        var theme = '';
+        var accent = '#ff4c4c';
+
+        try {
+          var themeSetting = localStorage.getItem('tw:theme');
+        } catch (e) {
+          // ignore
+        }
+        if (themeSetting === 'light') {
+          theme = 'light';
+        } else if (themeSetting === 'dark') {
+          theme = 'dark';
+        } else if (themeSetting) {
+          try {
+            var parsed = JSON.parse(themeSetting);
+            if (parsed.accent === 'purple') {
+              accent = '#855cd6';
+            } else if (parsed.accent === 'blue') {
+              accent = '#4c97ff';
+            }
+            if (parsed.gui === 'dark' || parsed.gui === 'light') {
+              theme = parsed.gui;
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        var splash = document.getElementById('spash-waiting-for-js');
+        splash.setAttribute('data-theme', theme);
+        if (theme !== 'dark') {
+          
+            splash.style.backgroundColor = accent;
+            splash.style.color = 'white';
+          
+        }
+        splash.hidden = false;
+      })();</script><div id="app"></div><script src="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/js/vendors~addon-settings~credits~editor~embed~fullscreen~player.ad53de9ca4eab2531651.js"></script><script src="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/js/vendors~editor~embed~fullscreen~player.9e7642baeb3893aa91d0.js"></script><script src="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/js/addon-settings~addons~editor~fullscreen~player.4dda90e4f739af1499b5.js"></script><script src="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/js/editor~embed~fullscreen~player.02aebd9a90fc38728236.js"></script><script src="/tw/7de8e0def127698b8f56ce138b5208a58d255b6e/js/editor.2ce567ed9b62feb9cef8.js"></script></body></html>
