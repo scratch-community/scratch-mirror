@@ -1,22 +1,26 @@
-<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google" value="notranslate"><meta name="description" content="TurboWarp is a Scratch mod with a compiler to run projects faster, dark mode for your eyes, a bunch of addons to improve the editor, and more."/><title>TurboWarp - Run Scratch projects faster</title><link rel="apple-touch-icon" href="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/images/apple-touch-icon.png"><style>.splash-screen {
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google" value="notranslate"><meta name="description" content="TurboWarp is a Scratch mod with a compiler to run projects faster, dark mode for your eyes, a bunch of addons to improve the editor, and more."/><title>TurboWarp - Run Scratch projects faster</title><link rel="apple-touch-icon" href="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/images/apple-touch-icon.png"><style>.splash-screen {
         position: absolute;
         width: 100%;
         height: 100%;
         top: 0;
         left: 0;
         display: flex;
+        flex-direction: column;
+        gap: 1rem;
         align-items: center;
         justify-content: center;
         text-align: center;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       }
-      .splash-screen[hidden],
-      .tw-loaded .splash-screen {
+      .splash-screen[hidden] {
         display: none;
       }
       .splash-screen[data-theme="dark"] {
         background-color: #333;
         color: white;
+      }
+      .splash-screen > * {
+        max-width: 80%;
       }
       .splash-spinner:after {
         content: " ";
@@ -31,7 +35,33 @@
       @keyframes splash-spinner {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
-      }</style></head><body><noscript><div class="splash-screen"><div><h1>TurboWarp requires JavaScript</h1><p>Consider using <a href="https://desktop.turbowarp.org/">TurboWarp Desktop</a> if you are afraid of remote JavaScript.</p></div></div></noscript><div class="splash-screen" id="spash-waiting-for-js" hidden><div class="splash-spinner"></div></div><script>(function() {
+      }
+      .splash-error-title {
+        font-weight: bold;
+      }
+      .splash-error-title a {
+        color: inherit;
+      }
+      .splash-errors {
+        font-family: monospace;
+      }
+      .splash-error-list {
+        white-space: pre-wrap;
+      }
+      .splash-reset {
+        color: inherit;
+        background: none;
+        padding: 0;
+        margin: 0;
+        border: none;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .splash-reset:disabled {
+        opacity: 0.8;
+      }</style></head><body><noscript><div class="splash-screen"><div><h1>TurboWarp requires JavaScript</h1><p>Consider using <a href="https://desktop.turbowarp.org/">TurboWarp Desktop</a> if you are afraid of remote JavaScript.</p></div></div></noscript><div class="splash-screen spash-waiting-for-js" hidden><div class="splash-spinner"></div><div class="splash-error-title" hidden>Something went wrong. <a href="https://scratch.mit.edu/users/GarboMuffin/#comments" target="_blank" rel="noreferrer">Please report</a> with the information below.</div><div class="splash-errors" hidden></div><button class="splash-reset" hidden>Click here to reset caches (can fix some errors)</button></div><script>(function () {
+        'use strict';
+
         var theme = '';
         var accent = '#ff4c4c';
 
@@ -64,7 +94,7 @@
           theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
 
-        var splash = document.getElementById('spash-waiting-for-js');
+        var splash = document.querySelector('.spash-waiting-for-js');
         splash.setAttribute('data-theme', theme);
         if (theme !== 'dark') {
           
@@ -72,4 +102,43 @@
           
         }
         splash.hidden = false;
-      })();</script><div id="app"></div><script src="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/js/vendors~addon-settings~credits~editor~embed~fullscreen~player.54a9cdf95df20798b26a.js"></script><script src="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/js/vendors~editor~embed~fullscreen~player.1d9a4e3f78e0f7015fb7.js"></script><script src="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/js/addon-settings~addons~editor~fullscreen~player.be90e8b9467dd05ed1a1.js"></script><script src="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/js/editor~embed~fullscreen~player.f48addc561b1e2d96aa5.js"></script><script src="/tw/8fb35c4a0b7f349092a00b1e107c53f24a487fc8/js/player.0471039c2e63eab59b89.js"></script></body></html>
+
+        var splashErrorTitle = document.querySelector('.splash-error-title');
+        var splashError = document.querySelector('.splash-errors');
+        var splashReset = document.querySelector('.splash-reset');
+
+        var totalErrors = 0;
+        window.onerror = function (event, source, line, col, err) {
+          if (++totalErrors > 5) return; // dont bother logging more
+          splashErrorTitle.hidden = splashError.hidden = splashReset.hidden = false;
+          var el = document.createElement('div');
+          el.textContent = 'Error (splash) in ' + source + ' (' + line + ':' + col + '): ' + err;
+          splashError.appendChild(el);
+        };
+
+        splashReset.onclick = function () {
+          splashReset.disabled = true;
+          function hardRefresh() {
+            var search = location.search.replace(/[?&]nocache=\d+/, '');
+            location.replace(location.pathname + search + (search ? '&' : '?') + 'nocache=' + Math.floor(Math.random() * 100000));
+          }
+          if ('serviceWorker' in navigator) {
+            setTimeout(hardRefresh, 5000);
+            navigator.serviceWorker.getRegistration("/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/")
+              .then(function(registration) {
+                if (registration) {
+                  return registration.unregister();
+                }
+              })
+              .then(hardRefresh)
+              .catch(hardRefresh);
+          } else {
+            hardRefresh();
+          }
+        };
+
+        window.SplashEnd = () => {
+          splash.hidden = true;
+          window.onerror = null;
+        };
+      })();</script><div id="app"></div><script src="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/js/vendors~addon-settings~credits~editor~embed~fullscreen~player.0c7aab6f6bca4b2a3d00.js"></script><script src="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/js/vendors~editor~embed~fullscreen~player.4987701033c7d510d98a.js"></script><script src="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/js/addon-settings~addons~editor~fullscreen~player.3dfd6bd05a95b1075923.js"></script><script src="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/js/editor~embed~fullscreen~player.231de20c3b5504e438ff.js"></script><script src="/tw/c732b0d02245e6c1bd44f0748b9db207669b3093/js/player.914d91f3527c4bdef3c8.js"></script></body></html>
