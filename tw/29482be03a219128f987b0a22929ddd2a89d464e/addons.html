@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Addon Settings - TurboWarp</title><style>body[data-splash-theme="dark"] {
+        background: #111;
+      }
+
+      noscript {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }</style></head><body><noscript><h1>This page requires JavaScript</h1></noscript><script>(function() {
+        var theme = '';
+
+        try {
+          var themeSetting = localStorage.getItem('tw:theme');
+        } catch (e) {
+          // ignore
+        }
+        if (themeSetting === 'light') {
+          theme = 'light';
+        } else if (themeSetting === 'dark') {
+          theme = 'dark';
+        } else if (themeSetting) {
+          try {
+            var parsed = JSON.parse(themeSetting);
+            if (parsed.gui === 'dark' || parsed.gui === 'light') {
+              theme = parsed.gui;
+            }
+          } catch (e) {
+            // ignore
+          }
+        }
+
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.body.setAttribute('data-splash-theme', theme);
+      })();</script><div id="app"></div><script src="/tw/29482be03a219128f987b0a22929ddd2a89d464e/js/vendors~addon-settings~credits~editor~embed~fullscreen~player.66bd835b791c21f039a7.js"></script><script src="/tw/29482be03a219128f987b0a22929ddd2a89d464e/js/addon-settings~addons~editor~fullscreen~player.31c240863336b83c7b67.js"></script><script src="/tw/29482be03a219128f987b0a22929ddd2a89d464e/js/addon-settings.befd82c8205cbe513510.js"></script></body></html>
